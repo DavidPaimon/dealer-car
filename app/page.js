@@ -8,13 +8,13 @@ function VehicleFilter() {
   const [modelYears, setModelYears] = useState([]);
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
   const [selectedModelYear, setSelectedModelYear] = useState("");
-  const [vehicleModels, setVehicleModels] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
     fetch("https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json")
       .then((res) => res.json())
-      .then((data) => setVehicleTypes(data.Results));
+      .then((data) => setVehicleTypes(data.Results))
+      .catch((error) => console.error("Error fetching vehicle types:", error));
 
     const years = [];
     const currentYear = new Date().getFullYear();
@@ -31,27 +31,31 @@ function VehicleFilter() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-red-900 to-white">
-      <h1 className="text-3xl font-bold mb-6 text-white">Filter Vehicles</h1>
-      <div className="mb-4 w-1/2">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-100 to-gray-300 text-gray-800">
+      <h1 className="text-4xl font-extrabold mb-8 text-gray-800 animate-fade-in">Filter Vehicles</h1>
+      <div className="mb-6 w-full max-w-md">
         <select
           value={selectedVehicleType}
           onChange={(e) => setSelectedVehicleType(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg text-gray-800"
+          className="w-full p-3 border border-gray-400 bg-white text-gray-800 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-gray-600 transition duration-300"
         >
           <option value="">Select Vehicle Type</option>
-          {vehicleTypes.map((type) => (
-            <option key={type.MakeId} value={type.MakeId}>
-              {type.MakeName}
-            </option>
-          ))}
+          {vehicleTypes.length > 0 ? (
+            vehicleTypes.map((type) => (
+              <option key={type.MakeId} value={type.MakeId}>
+                {type.MakeName}
+              </option>
+            ))
+          ) : (
+            <option value="">Loading vehicle types...</option>
+          )}
         </select>
       </div>
-      <div className="mb-4 w-1/2">
+      <div className="mb-6 w-full max-w-md">
         <select
           value={selectedModelYear}
           onChange={(e) => setSelectedModelYear(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg text-gray-800"
+          className="w-full p-3 border border-gray-400 bg-white text-gray-800 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-gray-600 transition duration-300"
         >
           <option value="">Select Model Year</option>
           {modelYears.map((year) => (
@@ -63,7 +67,7 @@ function VehicleFilter() {
       </div>
       <button
         disabled={!selectedVehicleType || !selectedModelYear}
-        className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-8 rounded-lg shadow-lg disabled:bg-gray-400"
+        className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-12 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 transform hover:scale-105"
         onClick={handleSearch}
       >
         Next

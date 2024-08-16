@@ -9,15 +9,16 @@ function VehicleModels({ makeId, year }) {
   useEffect(() => {
     fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeIdYear/makeId/${makeId}/modelyear/${year}?format=json`)
       .then((res) => res.json())
-      .then((data) => setModels(data.Results));
+      .then((data) => setModels(data.Results))
+      .catch((error) => console.error("Error fetching vehicle models:", error));
   }, [makeId, year]);
 
   return (
-    <div className="mt-8 w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg">
+    <div className="mt-8 w-full max-w-3xl bg-white p-8 rounded-lg shadow-xl">
       {models.length > 0 ? (
-        <ul className="list-disc list-inside text-gray-700">
+        <ul className="space-y-4 text-gray-800">
           {models.map((model) => (
-            <li key={model.Model_ID} className="mb-2">
+            <li key={model.Model_ID} className="p-3 bg-gray-200 rounded-lg shadow-md transition duration-300 transform hover:scale-105 hover:bg-gray-300">
               {model.Model_Name}
             </li>
           ))}
@@ -36,8 +37,8 @@ export default function ResultPage() {
 
   return (
     <Suspense fallback={<div>Loading vehicle models...</div>}>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-red-900 to-white">
-        <h1 className="text-3xl font-bold mb-6 text-white">Vehicle Models</h1>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-100 to-gray-300 text-gray-800">
+        <h1 className="text-4xl font-extrabold mb-8 text-gray-800 animate-fade-in">Vehicle Models</h1>
         {makeId && year ? (
           <VehicleModels makeId={makeId} year={year} />
         ) : (
