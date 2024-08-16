@@ -1,26 +1,20 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Page() {
+function VehicleFilter() {
   const [vehicleTypes, setVehicleTypes] = useState([]);
   const [modelYears, setModelYears] = useState([]);
-  const [selectedVehicleType, setSelectedVehicleType] = useState('');
-  const [selectedModelYear, setSelectedModelYear] = useState('');
-  const [error, setError] = useState(null);
-
+  const [selectedVehicleType, setSelectedVehicleType] = useState("");
+  const [selectedModelYear, setSelectedModelYear] = useState("");
+  const [vehicleModels, setVehicleModels] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
-    fetch('https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json')
+    fetch("https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json")
       .then((res) => res.json())
-      .then((data) => {
-        if (data && data.Results) {
-          setVehicleTypes(data.Results);
-        }
-      })
-      .catch(() => setError('Failed to load vehicle types'));
+      .then((data) => setVehicleTypes(data.Results));
 
     const years = [];
     const currentYear = new Date().getFullYear();
@@ -33,27 +27,17 @@ export default function Page() {
   const handleSearch = () => {
     if (selectedVehicleType && selectedModelYear) {
       router.push(`/result?makeId=${selectedVehicleType}&year=${selectedModelYear}`);
-    } else {
-      setError('Please select both vehicle type and model year');
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-vinotinto to-white p-6">
-      <h1 className="text-5xl font-extrabold mb-8 text-white shadow-lg">Filter Vehicles</h1>
-
-      {error && (
-        <div className="mb-4 text-red-400 bg-red-800 p-3 rounded-lg shadow-md">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      <div className="mb-6 w-full max-w-lg text-center">
-        <label className="block text-lg font-semibold mb-2 text-white">Select Vehicle Type</label>
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-red-900 to-white">
+      <h1 className="text-3xl font-bold mb-6 text-white">Filter Vehicles</h1>
+      <div className="mb-4 w-1/2">
         <select
           value={selectedVehicleType}
           onChange={(e) => setSelectedVehicleType(e.target.value)}
-          className="w-full p-4 border border-gray-300 rounded-lg shadow-md bg-white focus:outline-none focus:ring-4 focus:ring-vinotinto transition duration-300 text-lg"
+          className="w-full p-2 border border-gray-300 rounded-lg text-gray-800"
         >
           <option value="">Select Vehicle Type</option>
           {vehicleTypes.map((type) => (
@@ -63,13 +47,11 @@ export default function Page() {
           ))}
         </select>
       </div>
-
-      <div className="mb-6 w-full max-w-lg text-center">
-        <label className="block text-lg font-semibold mb-2 text-white">Select Model Year</label>
+      <div className="mb-4 w-1/2">
         <select
           value={selectedModelYear}
           onChange={(e) => setSelectedModelYear(e.target.value)}
-          className="w-full p-4 border border-gray-300 rounded-lg shadow-md bg-white focus:outline-none focus:ring-4 focus:ring-vinotinto transition duration-300 text-lg"
+          className="w-full p-2 border border-gray-300 rounded-lg text-gray-800"
         >
           <option value="">Select Model Year</option>
           {modelYears.map((year) => (
@@ -79,14 +61,21 @@ export default function Page() {
           ))}
         </select>
       </div>
-
       <button
         disabled={!selectedVehicleType || !selectedModelYear}
-        className="w-full max-w-xs bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white py-4 px-6 rounded-full font-bold text-xl hover:bg-gradient-to-l hover:from-yellow-500 hover:to-red-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl"
+        className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-8 rounded-lg shadow-lg disabled:bg-gray-400"
         onClick={handleSearch}
       >
-        Search
+        Next
       </button>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VehicleFilter />
+    </Suspense>
   );
 }
