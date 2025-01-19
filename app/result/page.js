@@ -14,7 +14,7 @@ function VehicleModels({ makeId, year }) {
   }, [makeId, year]);
 
   return (
-    <div className="mt-8 w-full max-w-3xl bg-white p-6 rounded-lg shadow-xl">
+    <div className="mt-8 w-full max-w-3xl bg-white p-8 rounded-lg shadow-xl">
       {models.length > 0 ? (
         <ul className="space-y-4 text-gray-800">
           {models.map((model) => (
